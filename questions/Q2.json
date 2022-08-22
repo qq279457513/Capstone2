@@ -1,0 +1,10 @@
+ {
+    "question_id": 2,
+      "question": "Which one of these is a JavaScript package manager?",
+      "answers": {
+        "a": "Node.js",
+        "b": "TypeScript",
+        "c": "npm"
+      },
+      "correctAnswer": "c"
+    }
