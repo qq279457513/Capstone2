@@ -39,6 +39,7 @@ $(document).ready(function () {
         $("#tester").text(fName);
         $("#tester2").text(fName);
         console.log(document.getElementById("tester"));
+        $("#submitName").attr("data-dismiss", "modal");
       } else {
         throw new Error();
       }
