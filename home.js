@@ -1,6 +1,6 @@
-
 // initial
 var fName = "Guess";
+var lName = "Guess";
 var questionList;
 var currentQuestion = 0;
 var score = 0;
@@ -12,7 +12,7 @@ fetch("questions/Q1.json")
   .then((json) => {
     questionList = json.questions;
     console.log(questionList.length);
- })
+  })
   .catch((err) => console.log(err));
 
 //Get api quote from server
@@ -23,38 +23,41 @@ fetch("https://quotes.rest/qod")
     let quotes = json.contents.quotes[0];
     console.log(quotes);
     $("#dailyQuote").text(quotes.quote);
-    $("#author").html("<spin>&#8212;&#8212;</spin>"+quotes.author);
-
+    $("#author").html("<spin>&#8212;&#8212;</spin>" + quotes.author);
   })
   .catch((err) => console.log(err));
-
 
 //submit signin first and last name, display on page
 $(document).ready(function () {
   $("#submitName").click(function (event) {
-    event.preventDefault();
-    console.log(document.getElementById("fname").value);
-    fName = document.getElementById("fname").value;
-    $("#tester").text(fName);
-    $("#tester2").text(fName);
-    console.log(document.getElementById("tester"));
+    try {
+      event.preventDefault();
+      console.log(document.getElementById("fname").value);
+      fName = document.getElementById("fname").value;
+      lName = document.getElementById("lname").value;
+      if (fName != "" && lName != "") {
+        $("#tester").text(fName);
+        $("#tester2").text(fName);
+        console.log(document.getElementById("tester"));
+      } else {
+        throw new Error();
+      }
+    } catch {
+        alert("Please enter the name.");
+    }
   });
 });
 console.log(fName);
 
-
 async function getQuestion(questions) {
   try {
-
     correct_Answer = questions.correctAnswer; // save correct answers
     console.log(correct_Answer);
     $("#questions").text(questions.question);
     $("#answers").html("");
     // change to array of object and make it better readable
     Object.entries(questions.answers).forEach((element) => {
-        
-      let listQuestion =
-        `<input type='radio' id='${element[0]}' name='answer' value='${element[0]}' required><label for='${element[0]}'>${element[0]}: ${element[1]}</label><br>`;
+      let listQuestion = `<input type='radio' id='${element[0]}' name='answer' value='${element[0]}' required><label for='${element[0]}'>${element[0]}: ${element[1]}</label><br>`;
       $("#answers").append(listQuestion);
     });
   } catch (err) {
@@ -88,8 +91,9 @@ $(document).ready(function () {
         $("#nextQuestion").text("Next Question");
 
         if (currentQuestion > 0) {
-          console.log("my answer: "+
-            document.querySelector('input[name="answer"]:checked').value
+          console.log(
+            "my answer: " +
+              document.querySelector('input[name="answer"]:checked').value
           );
           if (
             document.querySelector('input[name="answer"]:checked').value ==
