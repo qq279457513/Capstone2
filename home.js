@@ -1,17 +1,25 @@
+
 // initial
 var fName = "Guess";
-var questionsUrl = [
-  "questions/Q1.json",
-  "questions/Q2.json",
-  "questions/Q3.json",
-];
+var questionList;
 var currentQuestion = 0;
 var score = 0;
 var correct_Answer = "";
 
+//Load questions to array
+fetch("questions/Q1.json")
+  .then((response) => response.json())
+  .then((json) => {
+    questionList = json.questions;
+    console.log(questionList.length);
+ })
+  .catch((err) => console.log(err));
+
+//Get api quote from server
 fetch("https://quotes.rest/qod")
   .then((response) => response.json())
   .then((json) => {
+    console.log(json);
     let quotes = json.contents.quotes[0];
     console.log(quotes);
     $("#dailyQuote").text(quotes.quote);
@@ -21,7 +29,7 @@ fetch("https://quotes.rest/qod")
   .catch((err) => console.log(err));
 
 
-
+//submit signin first and last name, display on page
 $(document).ready(function () {
   $("#submitName").click(function (event) {
     event.preventDefault();
@@ -34,28 +42,19 @@ $(document).ready(function () {
 });
 console.log(fName);
 
+
 async function getQuestion(questions) {
   try {
-    const response = await fetch(questions);
-    const body = await response.json();
 
-    console.log(body);
-    correct_Answer = body.correctAnswer;
-    $("#questions").text(body.question);
+    correct_Answer = questions.correctAnswer; // save correct answers
+    console.log(correct_Answer);
+    $("#questions").text(questions.question);
     $("#answers").html("");
-    Object.entries(body.answers).forEach((element) => {
+    // change to array of object and make it better readable
+    Object.entries(questions.answers).forEach((element) => {
+        
       let listQuestion =
-        "<input type='radio' id='" +
-        element[0] +
-        "' name='answer' value='" +
-        element[0] +
-        "' required><label for='" +
-        element[0] +
-        "'>" +
-        element[0] +
-        ": " +
-        element[1] +
-        "</label><br>";
+        `<input type='radio' id='${element[0]}' name='answer' value='${element[0]}' required><label for='${element[0]}'>${element[0]}: ${element[1]}</label><br>`;
       $("#answers").append(listQuestion);
     });
   } catch (err) {
@@ -66,10 +65,10 @@ async function getQuestion(questions) {
 function getResult() {
   document.getElementById("resultPanel").style.display = "block";
   document.getElementById("quizPanel").style.display = "none";
-  let finalResult = ((score / questionsUrl.length) * 100).toFixed(2);
+  let finalResult = ((score / questionList.length) * 100).toFixed(2);
   if (finalResult > 50) {
     $("#finalScore").text(
-      "Congraduation, you got " + finalResult + "% correct, you pass the quiz."
+      "Congratulation, you got " + finalResult + "% correct, you pass the quiz."
     );
   } else {
     $("#finalScore").text(
@@ -82,13 +81,14 @@ $(document).ready(function () {
   $("#nextQuestion").click(function () {
     //check answer
     try {
-      questions = questionsUrl[currentQuestion];
+      let questions = questionList[currentQuestion];
 
       if (currentQuestion >= 0) {
         document.getElementById("welcome").style.display = "none";
-        console.log(document.getElement);
+        $("#nextQuestion").text("Next Question");
+
         if (currentQuestion > 0) {
-          console.log(
+          console.log("my answer: "+
             document.querySelector('input[name="answer"]:checked').value
           );
           if (
@@ -100,7 +100,7 @@ $(document).ready(function () {
           console.log(score);
         }
       }
-      if (currentQuestion >= questionsUrl.length) {
+      if (currentQuestion >= questionList.length) {
         getResult();
       } else {
         getQuestion(questions);
